@@ -1,5 +1,5 @@
 ARG ARCH
-ARG VERSION
+ARG UPSTREAM_VERSION=4.4.4r1
 ARG BUILD_DATE
 
 # Base image
@@ -7,7 +7,7 @@ FROM alpine:3.19
 
 # Variables
 ARG ARCH
-ARG VERSION
+ARG UPSTREAM_VERSION
 ARG BUILD_DATE
 ARG WORKDIR=/opt/chirpstack
 ARG OWNER=xoseperez
@@ -22,9 +22,9 @@ WORKDIR ${WORKDIR}
 
 # Checkout and compile remote code
 RUN mkdir -p binaries
-ADD --chmod=666 ${DOWNLOAD_FROM}/${VERSION}/${FILE}-sx1301_${VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-sx1301.tar.gz
-ADD --chmod=666 ${DOWNLOAD_FROM}/${VERSION}/${FILE}-sx1302_${VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-sx1302.tar.gz
-ADD --chmod=666 ${DOWNLOAD_FROM}/${VERSION}/${FILE}-2g4_${VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-2g4.tar.gz
+ADD --chmod=666 ${DOWNLOAD_FROM}/${UPSTREAM_VERSION}/${FILE}-sx1301_${UPSTREAM_VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-sx1301.tar.gz
+ADD --chmod=666 ${DOWNLOAD_FROM}/${UPSTREAM_VERSION}/${FILE}-sx1302_${UPSTREAM_VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-sx1302.tar.gz
+ADD --chmod=666 ${DOWNLOAD_FROM}/${UPSTREAM_VERSION}/${FILE}-2g4_${UPSTREAM_VERSION}_${ARCH}.tar.gz ./binaries/${FILE}-2g4.tar.gz
 
 # Copy fles from builder and repo
 COPY ./runner/ ./

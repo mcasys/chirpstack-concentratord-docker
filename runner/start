@@ -9,6 +9,39 @@ COLOR_ERROR="\e[31m" # red
 COLOR_RESET="\e[0m"
 
 # -----------------------------------------------------------------------------
+# Custom reset file
+# -----------------------------------------------------------------------------
+
+function reset_concentrator {
+
+    local RESET_FILE=./reset.sh
+
+    # Raspberry Pi requires using libgpiod with gpiochip4
+    if [[ $( grep -c "Raspberry Pi 5" /proc/cpuinfo ) -eq 0  ]]; then
+        USE_LIBGPIOD=${USE_LIBGPIOD:-0}
+        GPIO_CHIP=${GPIO_CHIP:-gpiochip0}
+    else
+        USE_LIBGPIOD=${USE_LIBGPIOD:-1}
+        GPIO_CHIP=${GPIO_CHIP:-gpiochip4}
+    fi
+
+    if [[ ${USE_LIBGPIOD} -eq 0 ]]; then
+        cp ./reset.sh.legacy ${RESET_FILE}
+    else
+        cp ./reset.sh.gpiod ${RESET_FILE}
+    fi
+    sed -i "s#{{GPIO_CHIP}}#${GPIO_CHIP}#" ${RESET_FILE}
+    sed -i "s#{{RESET_GPIO}}#${RESET_GPIO:-17}#" ${RESET_FILE}
+    sed -i "s#{{RESET_ACTIVE}}#${RESET_ACTIVE:-0}#" ${RESET_FILE}
+    sed -i "s#{{POWER_EN_GPIO}}#${POWER_EN_GPIO:-0}#" ${RESET_FILE}
+    sed -i "s#{{POWER_EN_LOGIC}}#${POWER_EN_LOGIC:-1}#" ${RESET_FILE}
+
+    chmod +x "${RESET_FILE}"
+    ${RESET_FILE}
+
+}
+
+# -----------------------------------------------------------------------------
 # Identify concentrator
 # -----------------------------------------------------------------------------
 
@@ -122,6 +155,9 @@ else
     RESET_GPIO=${RESET_GPIO:-0}
 fi
 
+# Reset active level
+RESET_ACTIVE=${RESET_ACTIVE:-1}
+
 # The RAK833-SPI/USB has a SPDT to select USB/SPI interfaces
 # If used with RAK2247 or RAK2287 hats this is wired to GPIO20
 if [[ "${ORIGINAL_MODEL^^}" == "RAK833" ]]; then
@@ -219,8 +255,10 @@ echo -e "${COLOR_INFO}Model:          $MODEL"
 fi
 echo -e "${COLOR_INFO}Design:         ${DESIGN}"
 echo -e "${COLOR_INFO}Interface:      $INTERFACE"
-if [[ "$INTERFACE" == "SPI" ]]; then
+if [[ "$RESET_GPIO" != "0" ]]; then
 echo -e "${COLOR_INFO}Reset GPIO:     $RESET_GPIO"
+fi
+if [[ "$POWER_EN_GPIO" != "0" ]]; then
 echo -e "${COLOR_INFO}Enable GPIO:    $POWER_EN_GPIO"
 fi
 if [[ "$DESIGN" == "sx1301" ]]; then
@@ -237,6 +275,16 @@ echo -e "${COLOR_INFO}Resources: https://www.chirpstack.io/docs/chirpstack-conce
 echo -e "${COLOR_INFO}           https://github.com/chirpstack/chirpstack-concentratord"
 echo -e "${COLOR_INFO}------------------------------------------------------------------"
 echo -e "${COLOR_RESET}"
+
+# -----------------------------------------------------------------------------
+# Manually reset the concentrator (USB concentrators only)
+# -----------------------------------------------------------------------------
+
+if [[ "$INTERFACE" == "USB" ]]; then
+    if [[ "$RESET_GPIO" != "0" ]] || [[ "$POWER_EN_GPIO" != "0" ]]; then
+        reset_concentrator
+    fi
+fi
 
 # -----------------------------------------------------------------------------
 # Manage sockets

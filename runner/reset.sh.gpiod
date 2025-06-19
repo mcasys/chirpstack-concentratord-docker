@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+GPIO_CHIP="{{GPIO_CHIP}}"
+RESET_GPIO="{{RESET_GPIO}}"
+RESET_ACTIVE="{{RESET_ACTIVE}}"
+POWER_EN_GPIO="{{POWER_EN_GPIO}}"
+POWER_EN_LOGIC="{{POWER_EN_LOGIC}}"
+
+GPIOSET="gpioset -m time -u 100000 ${GPIO_CHIP}"
+ON=1
+OFF=0
+if [[ ${RESET_ACTIVE} -eq 1 ]]; then
+    ON=0
+    OFF=1
+fi
+
+# Enable gateway
+if [[ ${POWER_EN_GPIO} -ne 0 ]]; then
+    echo "Concentrator enabled through ${GPIO_CHIP}:${POWER_EN_GPIO} (using libgpiod)"
+    ${GPIOSET} ${POWER_EN_GPIO}=${POWER_EN_LOGIC} 2>/dev/null
+fi
+
+# Reset gateway
+for GPIO in ${RESET_GPIO//,/ }; do
+    if [[ ${GPIO} -ne 0 ]]; then
+        echo "Concentrator reset through ${GPIO_CHIP}:${GPIO} (using libgpiod)"
+        ${GPIOSET} "${GPIO}"=${ON} 2>/dev/null
+        ${GPIOSET} "${GPIO}"=${OFF} 2>/dev/null
+        ${GPIOSET} "${GPIO}"=${ON} 2>/dev/null
+    fi
+done
+
+exit 0

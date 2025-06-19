@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.4.4r3 (2025-06-19)
+
+* Allow concentrator reset for USB concentrators
+
 ## 4.4.4r2 (2024-11-09)
 
 * Fix error in USB concentrators (wrong flags format)

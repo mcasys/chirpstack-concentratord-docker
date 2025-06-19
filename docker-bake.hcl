@@ -3,7 +3,7 @@ variable "BUILD_DATE" { default = "" }
 variable "REGISTRY" { default = "xoseperez/chirpstack-concentratord" }
 
 group "default" {
-    targets = ["armv7hf", "aarch64", "amd64"]
+    targets = ["aarch64", "amd64"]
 }
 
 target "armv7hf" {

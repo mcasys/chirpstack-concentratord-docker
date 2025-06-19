@@ -6,7 +6,8 @@
 # Globals
 # -----------------------------------------------------------------------------
 
-VERSION="4.4.4r1"
+VERSION="4.4.4r3"
+UPSTREAM_VERSION="4.4.4r1"
 PUSH=0
 TARGETS=()
 MANIFEST_TOOL=manifest-tool
@@ -47,10 +48,10 @@ done
 
 BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 REGISTRY=${REGISTRY:-"xoseperez/chirpstack-concentratord"}
-UPSTREAM_VERSION=${VERSION%r*}
-UPSTREAM_MAJOR=${VERSION%%.*}
+MAJOR=${VERSION%%.*}
 
 export VERSION
+export UPSTREAM_VERSION
 export BUILD_DATE
 export REGISTRY
 
@@ -62,7 +63,7 @@ if [[ ${PUSH} -eq 1 ]]; then
 
   # Ask confirmation if pushing to a registry
   echo "Pushing image into ${REGISTRY}"
-  echo "Tags: ${VERSION}, ${UPSTREAM_VERSION}, ${UPSTREAM_MAJOR}, latest"
+  echo "Tags: ${VERSION}, ${MAJOR}, latest"
   read -r -p "Are you sure? [y/N] " RESPONSE
   if [[ ! "${RESPONSE}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Cancelled"
@@ -89,15 +90,11 @@ if [[ ${PUSH} -eq 1 ]] && [[ ${#TARGETS[@]} -eq 0 ]]; then
 
     cat > ${MANIFEST_FILE} << EOL
 image: ${REGISTRY}:${VERSION}
-tags: ['${VERSION}',${UPSTREAM_VERSION},${UPSTREAM_MAJOR},'latest']
+tags: ['${VERSION}',${MAJOR},'latest']
 manifests:
   - image: ${REGISTRY}:aarch64-latest
     platform:
       architecture: arm64
-      os: linux  
-  - image: ${REGISTRY}:armv7hf-latest
-    platform:
-      architecture: arm
       os: linux  
   - image: ${REGISTRY}:amd64-latest
     platform:

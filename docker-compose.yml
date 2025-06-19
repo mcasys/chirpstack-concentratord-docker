@@ -12,10 +12,11 @@ services:
     #  context: .
     #  args:
     #    ARCH: amd64
-    #    VERSION: 4.4.4r1
+    #    VERSION: 4.4.4r3
+    #    UPSTREAM_VERSION: 4.4.4r1
 
     restart: unless-stopped
-    privileged: true
+    #privileged: true
     #network_mode: host
     #ipc: host
     #user: "${PUID:-1000}:${PGID:-1000}"
@@ -23,13 +24,13 @@ services:
     volumes:
       - /tmp:/tmp
     
-    #devices:
-    #  - /dev/ttyACM0
+    devices:
+      - /dev/ttyACM0
     #  - /dev/spidev0.0
-    #  - /dev/gpiochip0 
+      - /dev/gpiochip0 
 
-    #group_add:
-    #  - "dialout"           # provides permissions to access USB concentrators
+    group_add:
+      - "dialout"           # provides permissions to access USB concentrators
     #  - ${PGID_GPIO:-997}
     #  - ${PGID_I2C:-998}
     #  - ${PGID_SPI:-999}
@@ -37,15 +38,21 @@ services:
     environment:
 
       # Select the concentrator model (required, either RAK or chirpstack-concentratord naming)
-      MODEL: "RAK7271"
+      MODEL: "RAK5146"
 
       # Select the interface the concentrator uses (defaults to "SPI", "USB" only supported for SX1302/3 devices)
-      #INTERFACE: "SPI"
+      INTERFACE: "USB"
 
-      # Reset GPIO for SPI SX1301/2/3 devices
-      #RESET_GPIO: 17
+      # Use libgpiod to access the GPIO
+      USE_LIBGPIOD: 1
 
-      # Power enable GPIO for SPI SX1302 devices
+      # Reset GPIO
+      RESET_GPIO: 12
+
+      # Value to reset
+      RESET_ACTIVE: 0
+
+      # Power enable GPIO
       #POWER_EN_GPIO: 0
 
       # Set to 1 if concentrator has built-in GPS (set by default for some known concentrators)
