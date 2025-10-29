@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.5.3r1 (2025-10-29)
+
+* Based on chirpstack-concentratord-4.5.3r1 (special release)
+
 ## 4.4.4r3 (2025-06-19)
 
 * Allow concentrator reset for USB concentrators

@@ -6,8 +6,8 @@
 # Globals
 # -----------------------------------------------------------------------------
 
-VERSION="4.4.4r3"
-UPSTREAM_VERSION="4.4.4r1"
+VERSION="4.5.3r1"
+UPSTREAM_VERSION="4.5.3r1"
 PUSH=0
 TARGETS=()
 MANIFEST_TOOL=manifest-tool
@@ -79,7 +79,7 @@ fi
 if [[ ${PUSH} -eq 1 ]]; then
   time docker buildx bake --push "${TARGETS[@]}"
 else
-  time docker buildx bake "${TARGETS[@]}"
+  time docker buildx bake --load "${TARGETS[@]}"
 fi
 
 # -----------------------------------------------------------------------------
