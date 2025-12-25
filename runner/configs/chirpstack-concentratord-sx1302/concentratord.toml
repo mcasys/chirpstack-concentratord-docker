@@ -20,6 +20,13 @@ log_to_syslog=true
 # Statistics interval.
 stats_interval="30s"
 
+# Disable CRC status filter.
+#
+# By default, the Concentratord will ignore received frames which do not have
+# a valid CRC. This option makes it possible to disable this filter such that
+# received frames without (valid) CRC can be analyzed.
+disable_crc_filter=false
+
   # Configuration for the (ZeroMQ based) API.
   [concentratord.api]
 
@@ -56,3 +63,9 @@ model=""
 
 # Gateway vendor / model flags.
 model_flags=[]
+
+# Time fallback.
+#
+# In case the gateway does not have a GNSS module or is unable to aquire a
+# GNSS fix, use the system-time for setting the 'time' field on RX.
+time_fallback_enabled=true
